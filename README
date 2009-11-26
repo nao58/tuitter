@@ -1,0 +1,12 @@
+Twitter Client Class for PHP 5.
+
+This is alpha version.
+More information is coming later.
+
+Just you can test it like below;
+
+$t = new Tuitter('your_account', 'your_password');
+$followers = $t->getFollowers();
+foreach($followers as $follower){
+	echo $follower->screen_name."\n";
+}
