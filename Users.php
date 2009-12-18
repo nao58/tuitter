@@ -6,6 +6,8 @@ class Tuitter_Users extends Tuitter_XmlResult implements Iterator
 	private $_user;
 	private $_tweet;
 	private $_cdata;
+	private $_next_cursor;
+	private $_prev_cursor;
 
 	public function intersect($ids)
 	{
@@ -21,6 +23,16 @@ class Tuitter_Users extends Tuitter_XmlResult implements Iterator
 	public function reverse()
 	{
 		$this->_users = array_reverse($this->_users);
+	}
+
+	public function getNextCursor()
+	{
+		return $this->_next_cursor;
+	}
+
+	public function getPrevCursor()
+	{
+		return $this->_prev_cursor;
 	}
 
 	protected function _startElement($parser, $tag, $attr)
@@ -46,6 +58,12 @@ class Tuitter_Users extends Tuitter_XmlResult implements Iterator
 			case 'status':
 				$this->_user->status = $this->_tweet;
 				$this->_tweet = null;
+				break;
+			case 'next_cursor':
+				$this->_next_cursor = $this->_cdata;
+				break;
+			case 'previous_cursor':
+				$this->_prev_cursor = $this->_cdata;
 				break;
 			default:
 				if($this->_tweet){

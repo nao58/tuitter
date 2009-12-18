@@ -7,27 +7,27 @@ class Tuitter_User extends Tuitter_XmlResult
 
 	public function getStatus()
 	{
-		return $this->_tuitter->getUserStatus($this->id);
+		return $this->_tuitter->getUserStatus($this->screen_name);
 	}
 
 	public function follow()
 	{
-		return $this->_tuitter->follow($this->id);
+		return $this->_tuitter->follow($this->screen_name);
 	}
 
 	public function unfollow()
 	{
-		return $this->_tuitter->unfollow($this->id);
+		return $this->_tuitter->unfollow($this->screen_name);
 	}
 
 	public function sendDM($text)
 	{
-		return $this->_tuitter->sendDM($this->id, $text);
+		return $this->_tuitter->sendDM($this->screen_name, $text);
 	}
 
 	public function isFollowing()
 	{
-		return $this->_tuitter->existsFriendship($this->id);
+		return ($this->following == 'true' ? true : false);
 	}
 
 	protected function _startElement($parser, $tag, $attr)

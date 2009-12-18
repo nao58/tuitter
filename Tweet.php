@@ -17,6 +17,33 @@ class Tuitter_Tweet extends Tuitter_XmlResult
 		return $this->_tuitter->deleteMessage($this->id);
 	}
 
+	public function RT()
+	{
+		return $this->_tuitter->sendRT($this->id);
+	}
+
+	public function markFavorite()
+	{
+		return $this->_tuitter->markFavorite($this->id);
+	}
+
+	public function isReplied()
+	{
+		return ($this->in_reply_to_status_id != '' ? true : false);
+	}
+
+	public function getRepliedTweet()
+	{
+		if($id = $this->in_reply_to_status_id){
+			return $this->_tuitter->getMessage($this->id);
+		}
+	}
+
+	public function isFavorited()
+	{
+		return ($this->favorited == 'true' ? true : false);
+	}
+
 	protected function _startElement($parser, $tag, $attr)
 	{
 		$tag = strtolower($tag);

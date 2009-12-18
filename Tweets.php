@@ -19,6 +19,17 @@ class Tuitter_Tweets extends Tuitter_XmlResult implements Iterator
 		$this->_tweets = array_reverse($this->_tweets);
 	}
 
+	public function filter(Tuitter_Filter_Interface $filter)
+	{
+		$t = array();
+		foreach($this->_tweets as $i => $tweet){
+			if($filter->check($tweet)){
+				$t[$i] = $tweet;
+			}
+		}
+		$this->_tweets = $t;
+	}
+
 	protected function _startElement($parser, $tag, $attr)
 	{
 		$tag = strtolower($tag);
