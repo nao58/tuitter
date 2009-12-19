@@ -12,8 +12,9 @@ require_once dirname(__FILE__).'/Tuitter.php';
 try {
 	$tuitter = new Tuitter($user, $passwd);
 
-	if(!$tuitter->isFollowing('nao58')){
-		$tuitter->follow('nao58');
+	$user = $tuitter->getUser('nao58');
+	if(!$user->isFollowing()){
+		$user->follow();
 		$tuitter->sendMessage('This is my first tweet by Tuitter, @nao58 !');
 	}else{
 		$tl = $tuitter->getHomeTL();

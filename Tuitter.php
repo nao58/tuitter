@@ -359,7 +359,7 @@ class Tuitter
 	 * @param  string $id user id
 	 * @return Tuitter_User
 	 */
-	public function getUserStatus($screen_name)
+	public function getUser($screen_name)
 	{
 		$host = 'twitter.com';
 		$url = "/users/show";
