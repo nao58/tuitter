@@ -15,6 +15,11 @@ class Tuitter_DMs extends Tuitter_XmlResult implements Iterator
 		}
 	}
 
+	public function reverse()
+	{
+		$this->_dms = array_reverse($this->_dms);
+	}
+
 	protected function _startElement($parser, $tag, $attr)
 	{
 		$tag = strtolower($tag);
