@@ -17,16 +17,16 @@ Tuitter::init();
 class Tuitter
 {
 	/**
-	 * private members
+	 * protected members
 	 */
-	private $_user;
-	private $_pass;
-	private $_cache;
-	private $_client_name;
-	private $_client_version;
-	private $_client_url;
-	private $_retry = 3;
-	private $_retryInterval = 1;
+	protected $_user;
+	protected $_pass;
+	protected $_cache;
+	protected $_client_name;
+	protected $_client_version;
+	protected $_client_url;
+	protected $_retry = 3;
+	protected $_retryInterval = 1;
 
 	/**
 	 * Load modules Tuitter uses
@@ -265,7 +265,7 @@ class Tuitter
 		$host = 'twitter.com';
 		$url = "/statuses/show/{$id}";
 		$res = $this->_request($url, $host);
-		return new Tuitter_Tweet($this, $res->getBody());
+		return new Tuitter_Tweet($this, $res);
 	}
 
 	/**
@@ -281,7 +281,7 @@ class Tuitter
 		$url = '/statuses/update';
 		$opt['status'] = $status;
 		$res = $this->_request($url, $host, $opt, 'POST');
-		return new Tuitter_Tweet($this, $res->getBody());
+		return new Tuitter_Tweet($this, $res);
 	}
 
 	/**
@@ -296,7 +296,7 @@ class Tuitter
 		$host = 'twitter.com';
 		$url = "/statuses/destroy/{$id}";
 		$res = $this->_request($url, $host, array(), 'DELETE');
-		return new Tuitter_Tweet($this, $res->getBody());
+		return new Tuitter_Tweet($this, $res);
 	}
 
 	public function sendRT($id)
@@ -304,7 +304,7 @@ class Tuitter
 		$host = 'api.twitter.com';
 		$url = "/1/statuses/retweet/{$id}";
 		$res = $this->_request($url, $host, array(), 'POST');
-		return new Tuitter_Tweet($this, $res->getBody());
+		return new Tuitter_Tweet($this, $res);
 	}
 
 	public function getRTs($id, $opt=array())
@@ -328,7 +328,7 @@ class Tuitter
 		$url = '/statuses/friends';
 		if($id=$this->_popId($opt)) $url .= "/{$id}";
 		$res = $this->_request($url, $host, $opt);
-		$users = new Tuitter_Users($this, $res->getBody());
+		$users = new Tuitter_Users($this, $res);
 		$this->_treatIncrementalUsers($users, $incrementalKey, $url);
 		return $users;
 	}
@@ -347,7 +347,7 @@ class Tuitter
 		$url = '/statuses/followers';
 		if($id=$this->_popId($opt)) $url .= "/{$id}";
 		$res = $this->_request($url, $host, $opt);
-		$users = new Tuitter_Users($this, $res->getBody());
+		$users = new Tuitter_Users($this, $res);
 		$this->_treatIncrementalUsers($users, $incrementalKey, $url);
 		return $users;
 	}
@@ -361,11 +361,16 @@ class Tuitter
 	 */
 	public function getUser($screen_name)
 	{
+		return $this->getUserStatus($screen_name);
+	}
+
+	public function getUserStatus($screen_name)
+	{
 		$host = 'twitter.com';
 		$url = "/users/show";
 		$opt = array('screen_name' => $screen_name);
 		$res = $this->_request($url, $host, $opt);
-		return new Tuitter_User($this, $res->getBody());
+		return new Tuitter_User($this, $res);
 	}
 
 	public function getUserStatusById($id)
@@ -374,7 +379,7 @@ class Tuitter
 		$url = "/users/show";
 		$opt = array('user_id' => $id);
 		$res = $this->_request($url, $host, $opt);
-		return new Tuitter_User($this, $res->getBody());
+		return new Tuitter_User($this, $res);
 	}
 
 	public function searchUsers($q)
@@ -383,7 +388,7 @@ class Tuitter
 		$url = '/1/users/search';
 		$opt['q'] = $q;
 		$res = $this->_request($url, $host, $opt);
-		$users = new Tuitter_Users($this, $res->getBody());
+		$users = new Tuitter_Users($this, $res);
 		$this->_treatIncrementalUsers($users, $incrementalKey, $url);
 		return $users;
 	}
@@ -433,7 +438,7 @@ class Tuitter
 		$opt['screen_name'] = $screen_name;
 		$opt['text'] = $text;
 		$res = $this->_request($url, $host, $opt, 'POST');
-		return new Tuitter_DM($this, $res->getBody());
+		return new Tuitter_DM($this, $res);
 	}
 
 	public function sendDMbyId($id, $text)
@@ -443,7 +448,7 @@ class Tuitter
 		$opt['user_id'] = $id;
 		$opt['text'] = $text;
 		$res = $this->_request($url, $host, $opt, 'POST');
-		return new Tuitter_DM($this, $res->getBody());
+		return new Tuitter_DM($this, $res);
 	}
 
 	/**
@@ -458,7 +463,7 @@ class Tuitter
 		$host = 'twitter.com';
 		$url = "/direct_messages/destroy/{$id}";
 		$res = $this->_request($url, $host, array(), 'DELETE');
-		return new Tuitter_DM($this, $res->getBody());
+		return new Tuitter_DM($this, $res);
 	}
 
 	/**
@@ -474,7 +479,7 @@ class Tuitter
 		$url = "/friendships/create";
 		$opt = array('screen_name' => $screen_name);
 		$res = $this->_request($url, $host, $opt, 'POST');
-		return new Tuitter_User($this, $res->getBody());
+		return new Tuitter_User($this, $res);
 	}
 
 	public function followById($user_id)
@@ -483,7 +488,7 @@ class Tuitter
 		$url = "/friendships/create";
 		$opt = array('user_id' => $user_id);
 		$res = $this->_request($url, $host, $opt, 'POST');
-		return new Tuitter_User($this, $res->getBody());
+		return new Tuitter_User($this, $res);
 	}
 
 	/**
@@ -499,7 +504,7 @@ class Tuitter
 		$url = "/friendships/destroy";
 		$opt = array('screen_name' => $screen_name);
 		$res = $this->_request($url, $host, $opt, 'POST');
-		return new Tuitter_User($this, $res->getBody());
+		return new Tuitter_User($this, $res);
 	}
 
 	public function unfollowById($user_id)
@@ -508,7 +513,7 @@ class Tuitter
 		$url = "/friendships/destroy";
 		$opt = array('user_id' => $user_id);
 		$res = $this->_request($url, $host, $opt, 'POST');
-		return new Tuitter_User($this, $res->getBody());
+		return new Tuitter_User($this, $res);
 	}
 
 	/**
@@ -529,7 +534,7 @@ class Tuitter
 		$opt['user_a'] = $id_a;
 		$opt['user_b'] = $id_b;
 		$res = $this->_request($url, $host, $opt);
-		$hash = new Tuitter_Hash($this, $res->getBody());
+		$hash = new Tuitter_Hash($this, $res);
 		return ($hash->friends=='true');
 	}
 
@@ -543,7 +548,7 @@ class Tuitter
 		$opt['user_a'] = $id_a;
 		$opt['user_b'] = $id_b;
 		$res = $this->_request($url, $host, $opt);
-		$hash = new Tuitter_Hash($this, $res->getBody());
+		$hash = new Tuitter_Hash($this, $res);
 		return ($hash->friends=='true');
 	}
 
@@ -560,7 +565,7 @@ class Tuitter
 		$url = '/friends/ids';
 		if($id=$this->_popId($opt)) $url .= "/{$id}";
 		$res = $this->_request($url, $host, $opt);
-		return new Tuitter_IDs($this, $res->getBody());
+		return new Tuitter_IDs($this, $res);
 	}
 
 	/**
@@ -576,7 +581,7 @@ class Tuitter
 		$url = '/followers/ids';
 		if($id=$this->_popId($opt)) $url .= "/{$id}";
 		$res = $this->_request($url, $host, $opt);
-		return new Tuitter_IDs($this, $res->getBody());
+		return new Tuitter_IDs($this, $res);
 	}
 
 	public function getFavorites($opt=array())
@@ -592,7 +597,7 @@ class Tuitter
 		$host = 'twitter.com';
 		$url = "/favorites/create/{$id}";
 		$res = $this->_request($url, $host, array(), 'POST');
-		return new Tuitter_Tweet($this, $res->getBody());
+		return new Tuitter_Tweet($this, $res);
 	}
 
 	public function unmarkFavorite($id)
@@ -600,10 +605,10 @@ class Tuitter
 		$host = 'twitter.com';
 		$url = "/favorites/destroy/{$id}";
 		$res = $this->_request($url, $host, array(), 'POST');
-		return new Tuitter_Tweet($this, $res->getBody());
+		return new Tuitter_Tweet($this, $res);
 	}
 
-	private function _popId(&$opt)
+	protected function _popId(&$opt)
 	{
 		$id = null;
 		if(isset($opt['id'])){
@@ -613,32 +618,32 @@ class Tuitter
 		return $id;
 	}
 
-	private function _getTweets($url, $host, $opt, $incrementalKey)
+	protected function _getTweets($url, $host, $opt, $incrementalKey)
 	{
 		$opt = $this->_setIncrementalOpt($incrementalKey, $url, $opt);
 		$res = $this->_request($url, $host, $opt);
-		$t = new Tuitter_Tweets($this, $res->getBody());
+		$t = new Tuitter_Tweets($this, $res);
 		$this->_putIncrementalId($incrementalKey, $url, $t);
 		return $t;
 	}
 
-	private function _getDMs($url, $host, $opt, $incrementalKey)
+	protected function _getDMs($url, $host, $opt, $incrementalKey)
 	{
 		$opt = $this->_setIncrementalOpt($incrementalKey, $url, $opt);
 		$res = $this->_request($url, $host, $opt);
-		$t = new Tuitter_DMs($this, $res->getBody());
+		$t = new Tuitter_DMs($this, $res);
 		$this->_putIncrementalId($incrementalKey, $url, $t);
 		return $t;
 	}
 
-	private function _getUsers($url, $host, $opt)
+	protected function _getUsers($url, $host, $opt)
 	{
 		$res = $this->_request($url, $host, $opt);
-		$t = new Tuitter_Users($this, $res->getBody());
+		$t = new Tuitter_Users($this, $res);
 		return $t;
 	}
 
-	private function _setIncrementalOpt($key, $url, $opt)
+	protected function _setIncrementalOpt($key, $url, $opt)
 	{
 		if($key and $this->_cache){
 			$fullKey = sha1($this->_user.'@'.$url.'/'.$key).'.since_id';
@@ -649,7 +654,7 @@ class Tuitter
 		return $opt;
 	}
 
-	private function _putIncrementalId($key, $url, $tweets)
+	protected function _putIncrementalId($key, $url, $tweets)
 	{
 		if($key and $this->_cache){
 			if($max_id = $tweets->getMaxId()){
@@ -659,7 +664,7 @@ class Tuitter
 		}
 	}
 
-	private function _treatIncrementalUsers(Tuitter_Users &$users, $key, $url)
+	protected function _treatIncrementalUsers(Tuitter_Users &$users, $key, $url)
 	{
 		if($key and $this->_cache){
 			$cacheKey = sha1($this->_user.'@'.$url.'/'.$key).'.users';
@@ -673,7 +678,7 @@ class Tuitter
 		}
 	}
 
-	private function _request($url, $host, $opt=array(), $method='GET', $auth=true)
+	protected function _request($url, $host, $opt=array(), $method='GET', $auth=true)
 	{
 		$req = new Tuitter_Http_Request("{$url}.xml", $host);
 		if($auth) $req->setBasicAuth($this->_user, $this->_pass);
@@ -695,10 +700,10 @@ class Tuitter
 		if($res->getStatus()>=400){
 			throw new Exception($this->_getErrMsgByHttp($res));
 		}
-		return $res;
+		return $res->getBody();
 	}
 
-	private function _getErrMsgByHttp(Tuitter_Http_Response $res)
+	protected function _getErrMsgByHttp(Tuitter_Http_Response $res)
 	{
 		$sts = $res->getStatus();
 		$msg = "Twitter returned HTTP code '{$sts}'. ";
