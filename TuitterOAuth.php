@@ -21,9 +21,6 @@ class TuitterOAuth extends Tuitter
 		}
 		$headers = array();
 		if($multipart){
-			// not supported yet.
-			throw new Exception('Multipart format is not supported for OAuth yet. Sorry.');
-			exit;
       $boundary = '-TuItTr';
       $headers['Content-Type'] = "multipart/form-data; boundary={$boundary}";
 			$body = '';
@@ -35,7 +32,7 @@ class TuitterOAuth extends Tuitter
         $body .= "\r\n{$parts['body']}\r\n";
         $body .= "--{$boundary}--\r\n";
       }
-			$opt = array($body);
+			$opt = $body;
 		}
 		$this->_oauth->fetch('http://'.$host.$url.'.xml', $opt, $http_method, $headers);
 		return $this->_oauth->getLastResponse();
