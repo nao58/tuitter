@@ -61,6 +61,7 @@ class Tuitter
 		self::load("User.php");
 		self::load("IDs.php");
 		self::load("ID.php");
+		self::load("Account.php");
 	}
 
 	/**
@@ -608,6 +609,52 @@ class Tuitter
 		return new Tuitter_Tweet($this, $res);
 	}
 
+	public function accountVerifyCredentials()
+	{
+		$host = 'api.twitter.com';
+		$url = "/1/account/verify_credentials";
+		$res = $this->_request($url, $host, array(), 'GET');
+		return new Tuitter_Account($this, $res);
+	}
+
+	public function getAccount()
+	{
+		return $this->accountVerifyCredentials();
+	}
+
+	public function updateAccountProf(array $prof)
+	{
+		$host = 'api.twitter.com';
+		$url = "/1/account/update_profile";
+		$res = $this->_request($url, $host, $prof, 'POST');
+		return new Tuitter_Account($this, $res);
+	}
+
+	public function updateAccountColors(array $colors)
+	{
+		$host = 'api.twitter.com';
+		$url = "/1/account/update_profile_colors";
+		$res = $this->_request($url, $host, $colors, 'POST');
+		return new Tuitter_Account($this, $res);
+	}
+
+	public function updateAccountImage($img, $file, $mime)
+	{
+		$host = 'api.twitter.com';
+		$url = "/1/account/update_profile_image";
+		$res = $this->_requestImage($url, $host, array(), $img, $file, $mime);
+		return new Tuitter_Account($this, $res);
+	}
+
+	public function updateAccountBkImage($img, $file, $mime, $tile=false)
+	{
+		$host = 'api.twitter.com';
+		$url = "/1/account/update_profile_background_image";
+		$opt = array('tile' => ($tile ? 'true' : 'false'));
+		$res = $this->_requestImage($url, $host, $opt, $img, $file, $mime);
+		return new Tuitter_Account($this, $res);
+	}
+
 	protected function _popId(&$opt)
 	{
 		$id = null;
@@ -678,7 +725,25 @@ class Tuitter
 		}
 	}
 
-	protected function _request($url, $host, $opt=array(), $method='GET', $auth=true)
+	protected function _requestImage($url, $host, $opt, $cont, $file, $mime)
+	{
+		foreach($opt as $key => $v){
+			$newopt[] = array(
+				'header' => array('Content-Disposition' => "form-data; name=\"{$key}\""),
+				'body' => $v
+			);
+		}
+		$newopt[] = array(
+			'header' => array(
+				"Content-Disposition" => "form-data; name=\"image\"; filename=\"{$file}\"",
+				"Content-Type" => "{$mime}"
+			),
+			'body' => $cont
+		);
+		return $this->_request($url, $host, $newopt, 'POST', true, true);
+	}
+
+	protected function _request($url, $host, $opt=array(), $method='GET', $auth=true, $multipart=false)
 	{
 		$req = new Tuitter_Http_Request("{$url}.xml", $host);
 		if($auth) $req->setBasicAuth($this->_user, $this->_pass);
@@ -689,6 +754,7 @@ class Tuitter
 			$headers['X-Twitter-Version'] = $this->_client_version;
 		if($this->_client_url)
 			$headers['X-Twitter-URL'] = $this->_client_url;
+		$req->setMultipart($multipart);
 		$req->setHeaders($headers);
 		$req->setPrms($opt);
 		$res = Tuitter_Http::send($req, $method);

@@ -12,14 +12,32 @@ class TuitterOAuth extends Tuitter
 		$this->_oauth->setToken($accessToken, $accessTokenSecret);
 	}
 
-	protected function _request($url, $host, $opt=array(), $method='GET', $auth=true)
+	protected function _request($url, $host, $opt=array(), $method='GET', $auth=true, $multipart=false)
 	{
 		if($method=='GET'){
 			$http_method = OAUTH_HTTP_METHOD_GET;
 		}else{
 			$http_method = OAUTH_HTTP_METHOD_POST;
 		}
-		$this->_oauth->fetch('http://'.$host.$url.'.xml', $opt, $http_method);
+		$headers = array();
+		if($multipart){
+			// not supported yet.
+			throw new Exception('Multipart format is not supported for OAuth yet. Sorry.');
+			exit;
+      $boundary = '-TuItTr';
+      $headers['Content-Type'] = "multipart/form-data; boundary={$boundary}";
+			$body = '';
+      foreach($opt as $parts){
+        $body .= "--{$boundary}\r\n";
+        foreach($parts['header'] as $key => $val){
+          $body .= "{$key}: {$val}\r\n";
+        }
+        $body .= "\r\n{$parts['body']}\r\n";
+        $body .= "--{$boundary}--\r\n";
+      }
+			$opt = array($body);
+		}
+		$this->_oauth->fetch('http://'.$host.$url.'.xml', $opt, $http_method, $headers);
 		return $this->_oauth->getLastResponse();
 	}
 }

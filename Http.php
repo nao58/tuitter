@@ -18,7 +18,20 @@ class Tuitter_Http
 				ksort($prms);
 				$url .= '?'.http_build_query($prms);
 			}else if($method=='POST'){
-				$body = http_build_query($prms);
+				if($req->isMultipart()){
+					$boundary = '-TuItTr';
+					$headers['Content-Type'] = "multipart/form-data; boundary={$boundary}";
+					foreach($prms as $parts){
+						$body .= "--{$boundary}\r\n";
+						foreach($parts['header'] as $key => $val){
+							$body .= "{$key}: {$val}\r\n";
+						}
+						$body .= "\r\n{$parts['body']}\r\n";
+					}
+					$body .= "--{$boundary}--\r\n";
+				}else{
+					$body = http_build_query($prms);
+				}
 				$headers['Content-Length'] = strlen($body);
 			}
 		}

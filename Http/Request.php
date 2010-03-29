@@ -4,6 +4,7 @@ class Tuitter_Http_Request
 {
 	private $_host;
 	private $_port;
+	private $_multipart = false;
 	private $_url;
 	private $_user;
 	private $_pass;
@@ -31,6 +32,11 @@ class Tuitter_Http_Request
 	public function setHeaders(array $headers)
 	{
 		$this->_headers = $headers;
+	}
+
+	public function setMultipart($v)
+	{
+		$this->_multipart = $v;
 	}
 
 	public function getUser()
@@ -66,5 +72,10 @@ class Tuitter_Http_Request
 			$h['Authorization'] = "Basic {$hash}";
 		}
 		return $h;
+	}
+
+	public function isMultipart()
+	{
+		return $this->_multipart;
 	}
 }
