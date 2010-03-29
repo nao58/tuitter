@@ -30,8 +30,8 @@ class TuitterOAuth extends Tuitter
           $body .= "{$key}: {$val}\r\n";
         }
         $body .= "\r\n{$parts['body']}\r\n";
-        $body .= "--{$boundary}--\r\n";
       }
+      $body .= "--{$boundary}--\r\n";
 			$opt = $body;
 		}
 		$this->_oauth->fetch('http://'.$host.$url.'.xml', $opt, $http_method, $headers);
