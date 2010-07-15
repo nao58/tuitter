@@ -52,6 +52,7 @@ class Tuitter
 		self::load("Http/Request.php");
 		self::load("Http/Response.php");
 		self::load("XmlResult.php");
+		self::load("JsonResult.php");
 		self::load("Hash.php");
 		self::load("Tweets.php");
 		self::load("Tweet.php");
@@ -61,6 +62,8 @@ class Tuitter
 		self::load("User.php");
 		self::load("IDs.php");
 		self::load("ID.php");
+		self::load("SearchResults.php");
+		self::load("SearchResult.php");
 		self::load("Account.php");
 	}
 
@@ -467,6 +470,22 @@ class Tuitter
 		return new Tuitter_DM($this, $res);
 	}
 
+	public function search($q, $opt=array(), $incrementalKey='default')
+	{
+		$host = 'search.twitter.com';
+		$url = '/search';
+		$opt['q'] = $q;
+		if(!isset($opt['result_type'])){
+			$opt['result_type'] = 'recent';
+		}
+		$incurl = $url.$q;
+		$opt = $this->_setIncrementalOpt($incrementalKey, $incurl, $opt);
+		$res = $this->_request($url, $host, $opt, 'GET', true, false, '.json');
+		$ret = new Tuitter_SearchResults($this, $res);
+		$this->_putIncrementalId($incrementalKey, $incurl, $ret);
+		return $ret;
+	}
+
 	/**
 	 * Follows user
 	 *
@@ -743,9 +762,9 @@ class Tuitter
 		return $this->_request($url, $host, $newopt, 'POST', true, true);
 	}
 
-	protected function _request($url, $host, $opt=array(), $method='GET', $auth=true, $multipart=false)
+	protected function _request($url, $host, $opt=array(), $method='GET', $auth=true, $multipart=false, $type=".xml")
 	{
-		$req = new Tuitter_Http_Request("{$url}.xml", $host);
+		$req = new Tuitter_Http_Request("{$url}{$type}", $host);
 		if($auth) $req->setBasicAuth($this->_user, $this->_pass);
 		$headers = array();
 		if($this->_client_name)
