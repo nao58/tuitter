@@ -12,7 +12,7 @@ class TuitterOAuth extends Tuitter
 		$this->_oauth->setToken($accessToken, $accessTokenSecret);
 	}
 
-	protected function _request($url, $host, $opt=array(), $method='GET', $auth=true, $multipart=false)
+	protected function _request($url, $host, $opt=array(), $method='GET', $auth=true, $multipart=false, $type=".xml")
 	{
 		if($method=='GET'){
 			$http_method = OAUTH_HTTP_METHOD_GET;
