@@ -480,7 +480,7 @@ class Tuitter
 		}
 		$incurl = $url.$q;
 		$opt = $this->_setIncrementalOpt($incrementalKey, $incurl, $opt);
-		$res = $this->_request($url, $host, $opt, 'GET', true, false, '.json');
+		$res = $this->_requestBasic($url, $host, $opt, 'GET', true, false, '.json');
 		$ret = new Tuitter_SearchResults($this, $res);
 		$this->_putIncrementalId($incrementalKey, $incurl, $ret);
 		return $ret;
@@ -763,6 +763,11 @@ class Tuitter
 	}
 
 	protected function _request($url, $host, $opt=array(), $method='GET', $auth=true, $multipart=false, $type=".xml")
+	{
+		$this->_requestBasic($url, $host, $opt, $method, $auth, $multipart, $type);
+	}
+
+	protected function _requestBasic($url, $host, $opt=array(), $method='GET', $auth=true, $multipart=false, $type=".xml")
 	{
 		$req = new Tuitter_Http_Request("{$url}{$type}", $host);
 		if($auth) $req->setBasicAuth($this->_user, $this->_pass);
